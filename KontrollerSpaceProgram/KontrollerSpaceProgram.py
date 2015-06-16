@@ -1,7 +1,8 @@
 import threading,krpc,math
 
 targetAltitude=100000
-preApoWait=10
+preApoWait1=10
+preApoWait2=30
 class AutoStager(threading.Thread):
     def run(x):
         print "AutoStager ON"
@@ -36,14 +37,18 @@ class AutoMANO(threading.Thread):
             maxThrottle=1
             if flight.terminal_velocity < ms:
                 maxThrottle=flight.terminal_velocity/ms
+            if maxThrottle<0:
+                maxThrottle=0
+            if maxThrottle>1:
+                maxThrottle=1
             if vessel.orbit.apoapsis_altitude<targetAltitude:
-                conn.space_center.active_vessel.control.throttle=maxThrottle
-            elif vessel.orbit.periapsis_altitude < targetAltitude and vessel.orbit.time_to_apoapsis > preApoWait:
-                conn.space_center.active_vessel.control.throttle=0
-            elif vessel.orbit.periapsis_altitude < targetAltitude:
-                conn.space_center.active_vessel.control.throttle=maxThrottle
+                vessel.control.throttle=maxThrottle
+            elif vessel.orbit.periapsis_altitude < targetAltitude and vessel.orbit.time_to_apoapsis > preApoWait1 and vessel.orbit.time_to_periapsis > vessel.orbit.time_to_apoapsis:
+                vessel.control.throttle=0
+            elif vessel.orbit.periapsis_altitude < targetAltitude and vessel.orbit.time_to_apoapsis < preApoWait2 or vessel.orbit.time_to_periapsis < vessel.orbit.time_to_apoapsis:
+                vessel.control.throttle=maxThrottle
             else:
-                conn.space_center.active_vessel.control.throttle=0
+                vessel.control.throttle=0
             pass
 
 print "Awaiting connection"

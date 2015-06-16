@@ -9,7 +9,7 @@ class AutoStager(threading.Thread):
         vessel=conn.space_center.active_vessel
         while True:
             res=vessel.resources_in_decouple_stage(vessel.control.current_stage,False)
-            while (res.amount("LiquidFuel")==0) and vessel.control.current_stage > 0:
+            if ((res.amount("LiquidFuel")==0 and res.has_resource("LiquidFuel")) or (res.amount("SolidFuel")==0 and res.has_resource("SolidFuel")) or (res.amount("XenonGas")==0 and res.has_resource("XenonGas")) or res.names==[]) and vessel.control.current_stage > 0:
                 vessel.control.activate_next_stage()
 
 class AutoMANU(threading.Thread):

@@ -3,6 +3,7 @@ import threading,krpc,math
 targetAltitude=100000
 preApoWait1=5
 preApoWait2=50
+action4situ={}
 class AutoStager(threading.Thread):
     def run(x):
         print "AutoStager ON"
@@ -69,6 +70,15 @@ class AutoMANO(threading.Thread):
                 print "MANO FROM",ps,"TO",s
             ps=s
 
+class SituAct(threading.Thread):
+    def run(x):
+        vessel=conn.space_center.active_vessel
+        ps,s=0,0
+        while True:
+            s=vessel.situation
+            if s<>ps:
+                if action4situ.has_key(s) and action4situ[s]>-1:
+                    vessel.control.toggle_action_group(action4situ[s])
 print "Awaiting connection"
 conn = krpc.connect(name='Kontroller')
 
@@ -91,6 +101,13 @@ stager=AutoStager()
 print "Starting stager",
 stager.start()
 while not stager.isAlive():
+    print ".",
+print "OK"
+
+situAct=SituAct()
+print "Starting SituAct",
+situAct.start()
+while not situAct.isAlive():
     print ".",
 print "OK"
 

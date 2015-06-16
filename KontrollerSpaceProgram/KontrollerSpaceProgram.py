@@ -1,8 +1,8 @@
 import threading,krpc,math
 
 targetAltitude=100000
-preApoWait1=10
-preApoWait2=30
+preApoWait1=5
+preApoWait2=50
 class AutoStager(threading.Thread):
     def run(x):
         print "AutoStager ON"
